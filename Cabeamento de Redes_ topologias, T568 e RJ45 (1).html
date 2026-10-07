@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cabeamento de Redes: topologias, T568 e RJ45</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Exo+2:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f5f4;--fg:#14211c;--mut:#51615a;--card:#fff;--line:#cfd8d4;--acc:#1f6f5b;--o:#e8892b;--g:#3da35d;--b:#2f6fd0;--n:#8a5a3a;--pin:#c9a227;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 1rem/1.6 "IBM Plex Sans",system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;line-height:1.1;margin:0 0 .5em}
+h1{font-size:clamp(2rem,6vw,3.4rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(1.5rem,4vw,2.1rem);font-weight:700}
+h3{font-size:1.15rem;font-weight:700}
+p{margin:0 0 1em;max-width:68ch}
+.w{max-width:960px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+nav{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:10px 20px;max-width:960px;margin:0 auto}
+nav b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;margin-right:auto}
+nav a{color:var(--fg);text-decoration:none;padding:6px 12px;border-radius:99px;font-size:.92rem}
+nav a:hover,nav a:focus-visible{background:var(--card);outline:2px solid var(--acc)}
+section{padding:56px 0 8px}
+.hero{padding-top:44px}
+.lead{color:var(--mut);font-size:1.1rem}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:16px}
+button{font:inherit;cursor:pointer;color:var(--fg);background:transparent;border:0;padding:8px 16px}
+button[aria-pressed="true"]{background:var(--acc);color:var(--bg);font-weight:600}
+button:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}
+.plug{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;background:#2a3238;padding:14px 12px 10px;border-radius:10px 10px 4px 4px;max-width:520px}
+.wire{display:flex;flex-direction:column;align-items:center;gap:6px;color:#fff;font-size:.8rem}
+.wire i{display:block;width:100%;height:120px;border-radius:5px;border:1px solid rgba(0,0,0,.35);transition:background .25s}
+.wire s{text-decoration:none;width:60%;height:10px;background:var(--pin);border-radius:2px}
+.cap{margin-top:14px;font-size:.92rem;color:var(--mut);max-width:60ch}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:480px;font-size:.93rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{font-weight:600;background:var(--card)}
+.sw{display:inline-block;width:2.2em;height:.8em;border-radius:3px;vertical-align:middle;margin-right:8px;border:1px solid rgba(0,0,0,.3)}
+.topo{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.tabs button{border:1px solid var(--line);border-radius:99px}
+svg.t{width:100%;height:auto;max-height:280px}
+svg.t line{stroke:var(--acc);stroke-width:2}
+svg.t circle{fill:var(--card);stroke:var(--fg);stroke-width:2}
+svg.t circle.h{fill:var(--acc)}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pc div{border-left:3px solid var(--acc);padding-left:12px;font-size:.93rem}
+.pc div+div{border-color:var(--o)}
+.pc h4{margin:0 0 4px;font-size:.95rem}
+.pc ul{margin:0;padding-left:1.1em}
+ol.steps{padding-left:1.3em;max-width:68ch}
+ol.steps li{margin-bottom:.5em}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+code{background:var(--card);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.9em}
+footer{margin-top:64px;border-top:1px solid var(--line);padding:24px 0 32px;color:var(--mut);font-size:.9rem}
+@media (max-width:720px){.topo,.two,.pc{grid-template-columns:1fr}.wire i{height:90px}.wire{font-size:.7rem}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.wire i{transition:none}}
+
+:root{--bg:#060a16;--fg:#e4f1ff;--mut:#8ea6c4;--card:rgba(14,24,48,.72);--line:rgba(80,200,255,.22);--acc:#22e3ff;--acc2:#a855f7;color-scheme:dark}
+body{font-family:"Exo 2",system-ui,sans-serif;background:radial-gradient(900px 500px at 85% -10%,rgba(168,85,247,.22),transparent 60%),radial-gradient(800px 500px at -10% 10%,rgba(34,227,255,.16),transparent 60%),var(--bg);background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:48px 48px;opacity:.3;mask-image:linear-gradient(#000,transparent 85%);-webkit-mask-image:linear-gradient(#000,transparent 85%)}
+h1,h2,h3,nav b{font-family:Orbitron,"Exo 2",sans-serif;letter-spacing:.02em}
+h1{font-size:clamp(1.6rem,5vw,2.6rem);background:linear-gradient(90deg,#fff,var(--acc) 55%,var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+h2{text-shadow:0 0 18px rgba(34,227,255,.35)}
+header{background:rgba(6,10,22,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+#prog{position:absolute;left:0;bottom:-1px;height:2px;width:0;background:linear-gradient(90deg,var(--acc),var(--acc2));box-shadow:0 0 10px var(--acc)}
+nav a.cur{color:var(--acc);box-shadow:inset 0 -2px 0 var(--acc)}
+.panel{border-radius:6px;box-shadow:0 0 28px rgba(34,227,255,.08),inset 0 0 0 1px rgba(34,227,255,.05);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+button{transition:box-shadow .2s,background .2s}
+button:hover{box-shadow:0 0 12px rgba(34,227,255,.45)}
+button[aria-pressed="true"],.act{background:var(--acc);color:#04101c;font-weight:600;box-shadow:0 0 14px var(--acc)}
+.act{border-radius:8px;margin-top:6px}
+.plug{background:#0b1426;border:1px solid var(--line);box-shadow:inset 0 0 22px rgba(34,227,255,.1)}
+.wire{cursor:pointer;border-radius:6px;padding:2px}
+.wire:hover i,.wire.on i{box-shadow:0 0 14px var(--acc);transform:translateY(-4px)}
+.wire i{transition:transform .2s,box-shadow .2s}
+.wire.on s{background:var(--acc);box-shadow:0 0 8px var(--acc)}
+.wire:focus-visible{outline:2px solid var(--acc)}
+.readout{margin-top:12px;padding:10px 14px;border-left:3px solid var(--acc2);background:rgba(168,85,247,.1);font-size:.95rem}
+.leds{display:flex;gap:8px;margin:14px 0 8px;flex-wrap:wrap}
+.led{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:.8rem;border:1px solid var(--line);color:var(--mut);transition:all .2s}
+.led.ok{background:#3dff9a;color:#04101c;box-shadow:0 0 14px #3dff9a;border-color:#3dff9a}
+.led.bad{background:#ff3d6e;color:#fff;box-shadow:0 0 14px #ff3d6e;border-color:#ff3d6e}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.row button{border:1px solid var(--acc);border-radius:8px}
+tbody tr{transition:background .2s}
+tbody tr:hover,tbody tr.hl{background:rgba(34,227,255,.1)}
+svg.t line{filter:drop-shadow(0 0 3px var(--acc))}
+svg.t circle.h{filter:drop-shadow(0 0 6px var(--acc))}
+svg.t circle.pk{fill:var(--acc2);stroke:#fff;stroke-width:1;filter:drop-shadow(0 0 6px var(--acc2))}
+.bar{height:6px;background:rgba(255,255,255,.08);border-radius:9px;overflow:hidden;margin-bottom:8px;max-width:68ch}
+.bar b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--acc2));box-shadow:0 0 10px var(--acc);transition:width .3s}
+ol.steps li{cursor:pointer;padding:8px 12px;border-left:2px solid var(--line);list-style-position:inside;transition:all .2s}
+ol.steps li:hover{border-color:var(--acc)}
+ol.steps li.done{opacity:.5;text-decoration:line-through;border-color:#3dff9a}
+ol.steps{padding-left:0}
+ol.steps li:focus-visible{outline:2px solid var(--acc)}
+@media (prefers-reduced-motion:reduce){.wire i,.bar b,.led{transition:none}}
+
+.scale{position:relative;height:8px;border-radius:9px;background:linear-gradient(90deg,var(--acc),var(--acc2));margin:26px 9px 8px;box-shadow:0 0 12px rgba(34,227,255,.35)}
+.scale i{position:absolute;top:50%;left:25%;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 0 16px var(--acc);transform:translate(-50%,-50%);transition:left .4s}
+.sl{display:flex;justify-content:space-between;color:var(--mut);font-size:.8rem;margin-bottom:18px}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.facts div{border-left:3px solid var(--acc);padding-left:12px;font-size:.93rem}
+.facts div:nth-child(2){border-color:var(--acc2)}
+.facts div:nth-child(3){border-color:var(--o)}
+.facts h4{margin:0 0 4px;font-size:.95rem}
+.facts p{margin:0}
+@media (max-width:720px){.facts{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.scale i{transition:none}}
+</style>
+</head>
+<body>
+<header><i id="prog"></i><nav aria-label="Principal"><b>Cabeamento de Redes</b><a href="#rj45">RJ45</a><a href="#padroes">Padrões T568</a><a href="#tipos">Tipos de rede</a><a href="#topologias">Topologias</a><a href="#cabos">Categorias</a><a href="#crimpagem">Crimpagem</a></nav></header>
+
+<main class="w">
+<section class="hero" id="rj45">
+<h1>Do conector à topologia: como uma rede cabeada se monta</h1>
+<p class="lead">Veja a ordem dos fios no conector RJ45, escolha entre T568A e T568B e entenda como os dispositivos se conectam entre si.</p>
+<div class="panel">
+<div class="seg" role="group" aria-label="Padrão de montagem"><button id="bA" aria-pressed="false">T568A</button><button id="bB" aria-pressed="true">T568B</button></div>
+<div class="plug" id="plug" aria-label="Fios do conector RJ45"></div>
+<p class="cap">Visão frontal do plugue: contatos voltados para você, trava para baixo, pino 1 à esquerda. <span id="pairs"></span></p>
+<div class="readout" id="ro">Toque em um fio do plugue para ver o pino e a função.</div>
+<div class="row"><button id="t1">Testar cabo</button><button id="t2">Simular defeito</button></div>
+<div class="leds" id="leds" aria-label="Testador de cabo"></div>
+<p class="cap" id="tres">O testador acende os 8 fios em sequência, como o aparelho real.</p>
+</div>
+</section>
+
+<section id="padroes">
+<h2>Padrões de montagem: T568A e T568B</h2>
+<p>Os dois padrões usam os mesmos quatro pares trançados. A diferença está só na troca dos pares laranja e verde. Ambos funcionam; o importante é usar o mesmo padrão nas duas pontas. No Brasil e na maioria das instalações comerciais, o T568B é o mais comum.</p>
+<div class="panel scroll"><table>
+<thead><tr><th>Pino</th><th>T568A</th><th>T568B</th><th>Função (10/100 Mbps)</th></tr></thead>
+<tbody id="tb"></tbody></table></div>
+<h3 style="margin-top:28px">Cabo direto ou crossover?</h3>
+<div class="two">
+<div class="panel"><h3>Direto (straight-through)</h3><p>Mesmo padrão nas duas pontas (B com B, ou A com A). Liga dispositivos diferentes: computador ao switch, switch ao roteador, roteador à tomada de parede.</p></div>
+<div class="panel"><h3>Crossover</h3><p>T568A em uma ponta e T568B na outra. Liga dispositivos iguais diretamente, como computador com computador. Quase todas as placas atuais têm Auto MDI-X e corrigem isso sozinhas.</p></div>
+</div>
+</section>
+
+<section id="tipos">
+<h2>Tipos de rede por alcance</h2>
+<p>As redes são classificadas pela área que cobrem. Escolha um tipo e veja a posição dele na escala de alcance, de poucos metros até o mundo todo.</p>
+<div class="panel">
+<div class="tabs" id="ntabs" role="group" aria-label="Tipo de rede"></div>
+<h3 id="nn"></h3><p id="nd"></p>
+<div class="scale"><i id="mk"></i></div>
+<div class="sl"><span>~10 m</span><span>1 km</span><span>50 km</span><span>Global</span></div>
+<div class="facts" id="nf"></div>
+</div>
+</section>
+
+<section id="topologias">
+<h2>Topologias de rede</h2>
+<p>A topologia descreve como os dispositivos se conectam. Escolha uma para ver o desenho, as vantagens e as desvantagens.</p>
+<div class="panel">
+<div class="tabs" id="tabs" role="group" aria-label="Escolha a topologia"></div>
+<button class="act" id="send">Enviar pacote</button>
+<div class="topo" style="margin-top:14px">
+<svg class="t" id="svg" viewBox="0 0 320 220" role="img" aria-label="Diagrama da topologia"></svg>
+<div><h3 id="tn"></h3><p id="td"></p>
+<div class="pc"><div><h4>Vantagens</h4><ul id="tp"></ul></div><div><h4>Desvantagens</h4><ul id="tc"></ul></div></div></div>
+</div>
+</div>
+</section>
+
+<section id="cabos">
+<h2>Categorias de cabo de par trançado</h2>
+<p>O comprimento máximo de um canal Ethernet em par trançado é de 100 metros: até 90 m de cabo fixo mais até 10 m de cordões de conexão.</p>
+<div class="panel scroll"><table>
+<thead><tr><th>Categoria</th><th>Velocidade típica</th><th>Frequência</th><th>Observação</th></tr></thead>
+<tbody>
+<tr><td>Cat5e</td><td>1 Gbps</td><td>100 MHz</td><td>Suficiente para redes domésticas e escritórios pequenos</td></tr>
+<tr><td>Cat6</td><td>1 Gbps (10 Gbps até 55 m)</td><td>250 MHz</td><td>Mais imune a interferência que o Cat5e</td></tr>
+<tr><td>Cat6a</td><td>10 Gbps até 100 m</td><td>500 MHz</td><td>Comum em instalações novas e blindado com frequência</td></tr>
+<tr><td>Cat7</td><td>10 Gbps</td><td>600 MHz</td><td>Blindagem por par; não é reconhecida pela TIA</td></tr>
+<tr><td>Cat8</td><td>25/40 Gbps até 30 m</td><td>2000 MHz</td><td>Pensada para data centers, entre servidores e switches</td></tr>
+</tbody></table></div>
+<h3 style="margin-top:28px">Gigabit e o uso dos pares</h3>
+<p>Em 10/100 Mbps, só os pinos 1, 2, 3 e 6 transmitem dados. No Gigabit, os quatro pares (oito fios) trabalham ao mesmo tempo, em ambos os sentidos. Por isso um cabo com pares quebrados pode ligar a 100 Mbps, mas não chega a 1 Gbps.</p>
+</section>
+
+<section id="crimpagem">
+<h2>Como crimpar um cabo RJ45</h2>
+<div class="bar"><b id="cpb"></b></div><p class="cap" id="cpt">Toque em cada etapa para marcar como concluída.</p>
+<ol class="steps">
+<li>Corte a ponta do cabo com um corte reto e remova cerca de 2,5 cm da capa externa, sem ferir os fios.</li>
+<li>Destrance os quatro pares e alinhe os fios na ordem do padrão escolhido (T568A ou T568B).</li>
+<li>Achate e junte os fios, cortando as pontas rente para ficarem com cerca de 1,2 cm.</li>
+<li>Insira os fios no conector com a trava voltada para baixo, até cada fio encostar no fundo. Confira pela transparência do plugue.</li>
+<li>Posicione o conector no alicate de crimpagem e aperte até o fim. A capa do cabo deve ficar presa pela trava interna.</li>
+<li>Teste com um testador de cabos: as oito luzes devem acender em sequência nas duas pontas.</li>
+</ol>
+<p>Dica: use conectores e cabos compatíveis com a mesma categoria (por exemplo, plugue Cat6 em cabo Cat6), e mantenha o trecho destrançado o mais curto possível.</p>
+</section>
+</main>
+
+<footer><div class="w">Material introdutório sobre cabeamento estruturado. Para projetos profissionais, consulte as normas ABNT NBR 14565 e TIA/EIA-568.</div></footer>
+
+<script>
+const C={o:'#e8892b',g:'#3da35d',b:'#2f6fd0',n:'#8a5a3a'};
+const N={o:'laranja',g:'verde',b:'azul',n:'marrom'};
+const P={
+A:[['g',1],['g',0],['o',1],['b',0],['b',1],['o',0],['n',1],['n',0]],
+B:[['o',1],['o',0],['g',1],['b',0],['b',1],['g',0],['n',1],['n',0]]};
+const F=['TX+ (transmite)','TX− (transmite)','RX+ (recebe)','Não usado (Gigabit: par 4)','Não usado (Gigabit: par 4)','RX− (recebe)','Não usado (Gigabit: par 3)','Não usado (Gigabit: par 3)'];
+const FG=['TX+','TX−','RX+','Gigabit','Gigabit','RX−','Gigabit','Gigabit'];
+const bg=([c,s])=>s?`repeating-linear-gradient(180deg,#f4f4f4 0 12px,${C[c]} 12px 24px)`:C[c];
+const nm=([c,s])=>(s?'branco/':'')+N[c];
+function plug(k){
+ document.getElementById('plug').innerHTML=P[k].map((w,i)=>`<div class="wire" data-i="${i}" tabindex="0" role="button" aria-label="Pino ${i+1}"><i style="background:${bg(w)}" title="${nm(w)}"></i><s></s><span>${i+1}</span></div>`).join('');
+ document.getElementById('bA').setAttribute('aria-pressed',k==='A');
+ document.getElementById('bB').setAttribute('aria-pressed',k==='B');
+ document.getElementById('pairs').textContent=k==='B'?'No T568B, o par laranja ocupa os pinos 1 e 2 e o par verde ocupa 3 e 6.':'No T568A, o par verde ocupa os pinos 1 e 2 e o par laranja ocupa 3 e 6.';
+}
+document.getElementById('bA').onclick=()=>plug('A');
+document.getElementById('bB').onclick=()=>plug('B');
+plug('B');
+document.getElementById('tb').innerHTML=P.A.map((a,i)=>`<tr><td>${i+1}</td><td><span class="sw" style="background:${bg(a)}"></span>${nm(a)}</td><td><span class="sw" style="background:${bg(P.B[i])}"></span>${nm(P.B[i])}</td><td>${F[i]}</td></tr>`).join('');
+
+const ring=(n,r,cx=160,cy=110)=>Array.from({length:n},(_,i)=>[cx+r*Math.cos(2*Math.PI*i/n-Math.PI/2),cy+r*Math.sin(2*Math.PI*i/n-Math.PI/2)]);
+const T={
+bus:{n:'Barramento',d:'Todos os dispositivos compartilham um único cabo central (backbone). É a topologia mais simples e foi comum nas primeiras redes Ethernet com cabo coaxial.',p:['Usa pouco cabo','Barata e simples de montar'],c:['Uma falha no backbone derruba tudo','Desempenho cai com mais dispositivos','Difícil de diagnosticar'],
+ g(){const L=[[20,90,300,90]],V=[];for(let i=0;i<6;i++){const x=45+i*46;L.push([x,90,x,i%2?160:30]);V.push([x,i%2?160:30]);}return{L,V,H:[]}}},
+star:{n:'Estrela',d:'Cada dispositivo se liga por um cabo próprio a um ponto central, normalmente um switch. É a topologia padrão das redes Ethernet atuais.',p:['Fácil adicionar ou remover dispositivos','A falha de um cabo afeta só aquele dispositivo','Gerenciamento centralizado'],c:['O switch central é um ponto único de falha','Usa mais cabo que o barramento'],
+ g(){const V=ring(6,85),L=V.map(v=>[160,110,v[0],v[1]]);return{L,V,H:[[160,110]]}}},
+ring:{n:'Anel',d:'Cada dispositivo se liga a dois vizinhos, formando um círculo fechado. Os dados circulam em uma direção (ou em duas, no anel duplo).',p:['Tráfego organizado, sem colisões','Desempenho previsível'],c:['Um nó ou cabo com defeito pode interromper o anel','Alterações exigem parar a rede'],
+ g(){const V=ring(6,80),L=V.map((v,i)=>[v[0],v[1],V[(i+1)%6][0],V[(i+1)%6][1]]);return{L,V,H:[]}}},
+mesh:{n:'Malha',d:'Os dispositivos têm vários caminhos entre si. Na malha completa, todos se ligam a todos; na parcial, apenas alguns. É usada em backbones e redes que exigem alta disponibilidade.',p:['Alta redundância','A rede segue funcionando se um enlace falhar'],c:['Custo e quantidade de cabos elevados','Configuração mais complexa'],
+ g(){const V=ring(5,80),L=[];for(let i=0;i<5;i++)for(let j=i+1;j<5;j++)L.push([V[i][0],V[i][1],V[j][0],V[j][1]]);return{L,V,H:[]}}},
+tree:{n:'Árvore',d:'Combina estrelas em níveis hierárquicos: um switch de núcleo liga switches de distribuição, que ligam os dispositivos. Reflete bem a estrutura de prédios e campi.',p:['Cresce por camadas','Segmenta a rede por andar ou setor'],c:['Se o nó superior falha, os de baixo ficam isolados','Depende do cabo-tronco'],
+ g(){const V=[[40,185],[120,185],[200,185],[280,185]],M=[[80,105],[240,105]],L=[[160,30,80,105],[160,30,240,105],[80,105,40,185],[80,105,120,185],[240,105,200,185],[240,105,280,185]];return{L,V,H:[[160,30],...M]}}},
+hib:{n:'Híbrida',d:'Mistura duas ou mais topologias. Um exemplo comum é ligar duas redes em estrela por um enlace entre os switches. É o que se vê na maioria das empresas.',p:['Flexível e adaptável ao projeto','Permite combinar custo e redundância'],c:['Projeto e manutenção mais complexos','Custo varia conforme a combinação'],
+ g(){const a=[[90,110]],b=[[230,110]],V=[[35,45],[35,175],[145,110],[275,45],[275,175],[175,110]].slice(0,6),L=[[90,110,230,110],[90,110,35,45],[90,110,35,175],[230,110,275,45],[230,110,275,175]];return{L,V:[[35,45],[35,175],[275,45],[275,175]],H:[[90,110],[230,110]],L}}}
+};
+const tabs=document.getElementById('tabs');
+function show(k){
+ const t=T[k],g=t.g();
+ [...tabs.children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));
+ document.getElementById('svg').innerHTML=g.L.map(l=>`<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}"/>`).join('')+g.V.map(v=>`<circle cx="${v[0]}" cy="${v[1]}" r="9"/>`).join('')+g.H.map(v=>`<circle class="h" cx="${v[0]}" cy="${v[1]}" r="12"/>`).join('');
+ document.getElementById('tn').textContent=t.n;
+ document.getElementById('td').textContent=t.d;
+ document.getElementById('tp').innerHTML=t.p.map(x=>`<li>${x}</li>`).join('');
+ document.getElementById('tc').innerHTML=t.c.map(x=>`<li>${x}</li>`).join('');
+}
+Object.keys(T).forEach(k=>{const b=document.createElement('button');b.textContent=T[k].n;b.dataset.k=k;b.onclick=()=>show(k);tabs.appendChild(b)});
+show('star');
+
+const $=id=>document.getElementById(id);
+let sel=null;
+function pick(i){sel=i;const k=$('bB').getAttribute('aria-pressed')==='true'?'B':'A';const w=P[k][i];
+ document.querySelectorAll('#plug .wire').forEach((e,j)=>e.classList.toggle('on',j===i));
+ document.querySelectorAll('#tb tr').forEach((e,j)=>e.classList.toggle('hl',j===i));
+ $('ro').textContent='Pino '+(i+1)+': fio '+nm(w)+'. Função: '+F[i]+'.';}
+const _p=plug;plug=function(k){_p(k);if(sel!==null)pick(sel)};
+$('plug').addEventListener('click',e=>{const w=e.target.closest('.wire');if(w)pick(+w.dataset.i)});
+$('plug').addEventListener('keydown',e=>{const w=e.target.closest('.wire');if(w&&(e.key==='Enter'||e.key===' ')){e.preventDefault();pick(+w.dataset.i)}});
+const led=$('leds');led.innerHTML=Array.from({length:8},(_,i)=>'<span class="led">'+(i+1)+'</span>').join('');
+function test(bad){const L=[...led.children];L.forEach(l=>l.className='led');const b=bad?Math.floor(Math.random()*8):-1;$('tres').textContent='Testando...';
+ L.forEach((l,i)=>setTimeout(()=>{l.className='led '+(i===b?'bad':'ok')},i*180));
+ setTimeout(()=>$('tres').textContent=bad?'Defeito no fio '+(b+1)+': refaça a crimpagem dessa ponta.':'Cabo OK: os 8 fios têm continuidade.',8*180+60)}
+$('t1').onclick=()=>test(false);$('t2').onclick=()=>test(true);
+$('send').onclick=()=>{if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const s=$('svg');
+ [...s.querySelectorAll('line')].sort(()=>Math.random()-.5).slice(0,4).forEach((l,i)=>{const d='M'+l.getAttribute('x1')+' '+l.getAttribute('y1')+' L'+l.getAttribute('x2')+' '+l.getAttribute('y2');
+ s.insertAdjacentHTML('beforeend','<circle class="pk" r="5"><animateMotion dur="'+(0.8+i*0.25)+'s" fill="freeze" path="'+d+'"/></circle>')});
+ setTimeout(()=>s.querySelectorAll('.pk').forEach(e=>e.remove()),2400)};
+const ls=[...document.querySelectorAll('ol.steps li')];
+function upd(){const n=ls.filter(l=>l.classList.contains('done')).length;$('cpb').style.width=n/ls.length*100+'%';$('cpt').textContent=n===ls.length?'Cabo pronto para o teste!':n+' de '+ls.length+' etapas concluídas'}
+ls.forEach(li=>{li.tabIndex=0;li.onclick=()=>{li.classList.toggle('done');upd()};li.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();li.click()}}});
+addEventListener('scroll',()=>{const h=document.documentElement;$('prog').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight||1)*100)+'%'},{passive:true});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('cur',a.getAttribute('href')==='#'+e.target.id))}),{rootMargin:'-40% 0px -55% 0px'});
+document.querySelectorAll('section[id]').forEach(x=>io.observe(x));
+
+const NT={
+PAN:{n:'PAN: rede pessoal',pos:6,d:'Personal Area Network. Conecta os dispositivos de uma única pessoa, ao alcance das mãos.',a:'Até cerca de 10 metros',e:'Celular com fone, smartwatch ou teclado sem fio',t:'Bluetooth, NFC, USB e infravermelho'},
+LAN:{n:'LAN: rede local',pos:25,d:'Local Area Network. Liga computadores, impressoras e servidores em uma casa, escritório ou andar. É a rede em que se usa o cabo RJ45 e o switch.',a:'De um cômodo a um prédio, até cerca de 1 km',e:'Rede de um escritório ou de uma casa',t:'Ethernet (cabo de par trançado) e Wi-Fi'},
+WLAN:{n:'WLAN: LAN sem fio',pos:32,d:'Wireless LAN. É uma rede local em que os dispositivos se conectam por rádio a um ponto de acesso, em vez de cabo.',a:'Dezenas de metros por ponto de acesso',e:'Wi-Fi de casa, de cafés e de empresas',t:'Wi-Fi (padrões IEEE 802.11)'},
+CAN:{n:'CAN: rede de campus',pos:46,d:'Campus Area Network. Interliga várias LANs de prédios próximos que pertencem à mesma organização.',a:'Alguns quilômetros',e:'Universidade, hospital ou parque industrial',t:'Fibra óptica entre prédios, switches de núcleo'},
+MAN:{n:'MAN: rede metropolitana',pos:68,d:'Metropolitan Area Network. Cobre uma cidade ou região urbana, ligando várias redes locais por enlaces de alta capacidade.',a:'De 5 a 50 km, aproximadamente',e:'Rede de uma prefeitura ou de um provedor de internet local',t:'Fibra óptica, Metro Ethernet e enlaces de rádio'},
+WAN:{n:'WAN: rede de longa distância',pos:94,d:'Wide Area Network. Conecta redes separadas por grandes distâncias, entre cidades, países e continentes. A internet é a maior WAN que existe.',a:'Países e continentes',e:'A internet e as redes de bancos e multinacionais',t:'Fibra óptica, cabos submarinos, MPLS e satélite'}
+};
+const ntabs=$('ntabs');
+function showN(k){const t=NT[k];
+ [...ntabs.children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));
+ $('nn').textContent=t.n;$('nd').textContent=t.d;$('mk').style.left=t.pos+'%';
+ $('nf').innerHTML='<div><h4>Alcance</h4><p>'+t.a+'</p></div><div><h4>Exemplo</h4><p>'+t.e+'</p></div><div><h4>Tecnologias</h4><p>'+t.t+'</p></div>';}
+Object.keys(NT).forEach(k=>{const b=document.createElement('button');b.textContent=k;b.dataset.k=k;b.onclick=()=>showN(k);ntabs.appendChild(b)});
+showN('LAN');
+</script>
+</body>
+</html>
